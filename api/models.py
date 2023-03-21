@@ -1,14 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
+import datetime
 
 
 
 class User(AbstractUser):
       options = (
-        ("candidate":"candidate"),
-        ("employer":"employer")
+        ("candidate","candidate"),
+        ("employer","employer") 
       )
-      role = models.CharField(choices=options)
+      role = models.CharField(max_length=200,choices=options)
     
  
 class CandidateProfile(models.Model):
@@ -17,9 +19,9 @@ class CandidateProfile(models.Model):
     image = models.ImageField(upload_to="images",null=True)
     gender = models.CharField(max_length=10)
     qualification = models.CharField(max_length=200)
-    resume = models.FileField()
+    resume = models.FileField(upload_to="resumes",null=True)
     location = models.CharField(max_length=200)
-    ready_to_relocate = models.BooleanField()
+    ready_to_relocate = models.BooleanField(default=True)
     skills = models.CharField(max_length=200)
     experience = models.CharField(max_length=200)
 
@@ -40,10 +42,10 @@ class CompanyProfile(models.Model):
  
 class Job(models.Model):
     company = models.ForeignKey(CompanyProfile, on_delete=models.CASCADE)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField(default=datetime.date.today)
+    end_date = models.DateField(default=datetime.date.today)
     title = models.CharField(max_length=200)
-    salary = models.FloatField()
+    salary = models.CharField(max_length=200)
     description = models.CharField(max_length=400)
     qualification=models.CharField(max_length=200)
     experience = models.CharField(max_length=100)
@@ -59,9 +61,9 @@ class Application(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     candidate = models.ForeignKey(CandidateProfile, on_delete=models.CASCADE)
     options = (
-        ("pending" : "pending"),
-		("accept" : "accept"),
-		("reject" : "reject")
+        ("pending","pending"),
+		("accept","accept"),
+		("reject","reject")
     )
     options = models.CharField(max_length=200,choices=options,default="pending")
     apply_date = models.DateField(auto_now_add=True)
